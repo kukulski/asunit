@@ -1,12 +1,13 @@
 package asunit.printers {
 
+    import asunit.framework.CallbackBridge;
     import asunit.framework.IResult;
     import asunit.framework.IRunListener;
     import asunit.framework.ITestFailure;
     import asunit.framework.ITestSuccess;
     import asunit.framework.ITestWarning;
     import asunit.framework.Method;
-
+    
     import flash.display.Shape;
     import flash.display.Sprite;
     import flash.display.StageAlign;
@@ -17,7 +18,6 @@ package asunit.printers {
     import flash.text.TextFormat;
     import flash.utils.getQualifiedClassName;
     import flash.utils.getTimer;
-    import asunit.framework.CallbackBridge;
 
     public class TextPrinter extends Sprite implements IRunListener {
         public static var LOCAL_PATH_PATTERN:RegExp = /([A-Z]:\\[^\/:\*\?<>\|]+\.\w{2,6})|(\\{2}[^\/:\*\?<>\|]+\.\w{2,6})/g;
@@ -118,11 +118,23 @@ package asunit.printers {
             var stack:String = "";
             stack = failure.thrownException.getStackTrace();
             //stack = stack.replace(localPathPattern, '');
+			
+			var chopAt:int = stack.indexOf("at asunit.runners");
+			if(chopAt != -1)
+				stack = stack.substr(0,chopAt);
+//			var lines:Array = stack.split('\n');
+//			lines = lines.filter(notTestRunner);
+//			stack = lines.join('\n');			
+			
             stack = stack.replace(/AssertionFailedError: /, '');
             stack += "\n\n";
             return stack;
         }
         
+		private function notTestRunner(line:String,idx:int,arr:Array):Boolean {
+			return line.indexOf("at asunit.runners") == -1;
+		}
+		
         public function onTestSuccess(success:ITestSuccess):void {
             dots.push('.');
             updateTextDisplay();
