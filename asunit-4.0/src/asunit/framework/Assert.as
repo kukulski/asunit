@@ -374,9 +374,10 @@ package asunit.framework {
 				failNotEquals(message, expected, actual);
 			}
 			for (var i : int = 0; i < expected.length; i++) {
-				if(expected[i] is Array)
+				if(expected[i] is Array || actual[i] is Array) 
 					assertEqualsArraysRecursive(message, expected[i], actual[i]);
-				assertEquals(expected[i], actual[i]);
+				 else 
+					assertEquals(expected[i], actual[i]);
 			}
 		}
         /**
