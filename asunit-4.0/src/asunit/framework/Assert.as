@@ -338,6 +338,47 @@ package asunit.framework {
             }
         }
 
+		
+		/**
+		 * Asserts that two arrays have the same length and contain the same
+		 * objects in the same order. If the arrays are not equal by this
+		 * definition an AssertionFailedError is thrown with the given message.
+		 */
+		static public function assertEqualsArraysRecursive(...args:Array):void {
+			var message:String;
+			var expected:Array;
+			var actual:Array;
+			
+			if(args.length == 2) {
+				message = "";
+				expected = args[0];
+				actual = args[1];
+			}
+			else if(args.length == 3) {
+				message = args[0];
+				expected = args[1];
+				actual = args[2];
+			}
+			else {
+				throw new IllegalOperationError("Invalid argument count");
+			}
+			
+			if (expected == null && actual == null) {
+				return;
+			}
+			if ((expected == null && actual != null) || (expected != null && actual == null)) {
+				failNotEquals(message, expected, actual);
+			}
+			// from here on: expected != null && actual != null
+			if (expected.length != actual.length) {
+				failNotEquals(message, expected, actual);
+			}
+			for (var i : int = 0; i < expected.length; i++) {
+				if(expected[i] is Array)
+					assertEqualsArraysRecursive(message, expected[i], actual[i]);
+				assertEquals(expected[i], actual[i]);
+			}
+		}
         /**
          * Asserts that two arrays have the same length and contain the same
          * objects. The order of the objects in the arrays is ignored. If they
