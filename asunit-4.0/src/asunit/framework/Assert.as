@@ -1,10 +1,10 @@
 package asunit.framework {
+    import asunit.asserts.assertTrue;
     import asunit.errors.AssertionFailedError;
-
-    import flash.utils.getQualifiedClassName;
-
+    
     import flash.errors.IllegalOperationError;
     import flash.events.EventDispatcher;
+    import flash.utils.getQualifiedClassName;
 
     /**
      * A set of assert methods.  Messages are only displayed when an assert fails.
@@ -435,6 +435,29 @@ package asunit.framework {
             }
         }
 
+		
+		static public function assertEqualsObject(a:Object, b:Object):void {
+			if(a === b) return;
+			
+			assertSameKeys(a,b);
+			
+			for(var key:* in a) {
+				assertEquals("map entry:" + key, a[key].toString(), b[key].toString());
+			}
+		}
+		static public function assertSameKeys(a:Object, b:Object):void {
+			assertAllKeys(a,b);
+			assertAllKeys(b,a);
+		}
+		
+		static private function assertAllKeys(a:Object, b:Object):void {
+			if(a === b) return;
+			for(var key:* in a) 
+				assertTrue("missing key:"+key, key in b);
+		}
+		
+		
+		
         static private function failNotEquals(message:String, expected:Object, actual:Object):void {
             fail(format(message, expected, actual));
         }
