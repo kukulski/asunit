@@ -457,6 +457,17 @@ package asunit.framework {
 		}
 		
 		
+		static public function assertIsA(...rest):void {
+			var objectInstance:* = rest.pop();
+			var expectedClass:Class = rest.pop();
+			var message:String = rest.pop() || "";
+		
+			if(objectInstance is expectedClass)
+				return;
+			fail(message + " expected instance of <"+expectedClass+"> but received object <"+objectInstance+">");
+		}
+		
+		
 		
         static private function failNotEquals(message:String, expected:Object, actual:Object):void {
             fail(format(message, expected, actual));
