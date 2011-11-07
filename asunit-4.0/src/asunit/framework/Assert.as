@@ -346,8 +346,8 @@ package asunit.framework {
 		 */
 		static public function assertEqualsArraysRecursive(...args:Array):void {
 			var message:String;
-			var expected:Array;
-			var actual:Array;
+			var expected:*;
+			var actual:*;
 			
 			if(args.length == 2) {
 				message = "";
@@ -374,7 +374,7 @@ package asunit.framework {
 				failNotEquals(message, expected, actual);
 			}
 			for (var i : int = 0; i < expected.length; i++) {
-				if(expected[i] is Array || actual[i] is Array) 
+				if(expected[i] is Array || actual[i] is Array || expected[i] is Vector || actual[i] is Vector) 
 					assertEqualsArraysRecursive(message, expected[i], actual[i]);
 				 else 
 					assertEquals(expected[i], actual[i]);
