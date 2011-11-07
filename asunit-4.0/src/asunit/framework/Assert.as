@@ -345,39 +345,28 @@ package asunit.framework {
 		 * definition an AssertionFailedError is thrown with the given message.
 		 */
 		static public function assertEqualsArraysRecursive(...args:Array):void {
-			var message:String;
-			var expected:*;
-			var actual:*;
-			
-			if(args.length == 2) {
-				message = "";
-				expected = args[0];
-				actual = args[1];
-			}
-			else if(args.length == 3) {
-				message = args[0];
-				expected = args[1];
-				actual = args[2];
-			}
-			else {
-				throw new IllegalOperationError("Invalid argument count");
-			}
+			if(args.length < 2) throw new ArgumentError("need at least <expected> and <actual>");
+			var actual:* = args.pop();
+			var expected:* = args.pop();
+			var message:String = args.pop() || "";
 			
 			if (expected == null && actual == null) {
 				return;
 			}
-			if ((expected == null && actual != null) || (expected != null && actual == null)) {
-				failNotEquals(message, expected, actual);
-			}
+			if(expected == null)
+				assertNull(message,actual);
+			else 
+				assertNotNull(message, actual);
+	
 			// from here on: expected != null && actual != null
 			if (expected.length != actual.length) {
-				failNotEquals(message, expected, actual);
+				failNotEquals(message + "lengths differ", expected, actual);
 			}
 			for (var i : int = 0; i < expected.length; i++) {
 				if(expected[i] is Array || actual[i] is Array || expected[i] is Vector || actual[i] is Vector) 
-					assertEqualsArraysRecursive(message, expected[i], actual[i]);
+					assertEqualsArraysRecursive(message+ "["+i+"]", expected[i], actual[i]);
 				 else 
-					assertEquals(expected[i], actual[i]);
+					assertEquals(message + "["+i+"]",expected[i], actual[i]);
 			}
 		}
         /**
@@ -387,7 +376,11 @@ package asunit.framework {
          * with the given message.
          */
         static public function assertEqualsArraysIgnoringOrder(...args:Array):void {
-            var message:String;
+            if(args.length < 2) 
+				throw new IllegalOperationError("Invalid argument count");
+
+			
+			var message:String;
             var expected:Array;
             var actual:Array;
 
@@ -402,7 +395,6 @@ package asunit.framework {
                 actual = args[2];
             }
             else {
-                throw new IllegalOperationError("Invalid argument count");
             }
 
             if (expected == null && actual == null) {
@@ -458,6 +450,7 @@ package asunit.framework {
 		
 		
 		static public function assertIsA(...rest):void {
+			if(rest.length < 2) throw new ArgumentError("need at least <expected> and <actual>");
 			var objectInstance:* = rest.pop();
 			var expectedClass:Class = rest.pop();
 			var message:String = rest.pop() || "";
