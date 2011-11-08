@@ -428,7 +428,12 @@ package asunit.framework {
         }
 
 		
-		static public function assertEqualsObject(a:Object, b:Object):void {
+		static public function assertEqualsObject(...args):void {
+			if(args.length < 2) throw new ArgumentError("need at least <expected> and <actual>");
+			var b:* = args.pop();
+			var a:* = args.pop();
+			var message:String = args.pop() || "";
+			
 			if(a === b) return;
 			
 			assertSameKeys(a,b);
@@ -437,15 +442,21 @@ package asunit.framework {
 				assertEquals("map entry:" + key, a[key].toString(), b[key].toString());
 			}
 		}
-		static public function assertSameKeys(a:Object, b:Object):void {
-			assertAllKeys(a,b);
-			assertAllKeys(b,a);
+		static public function assertSameKeys(...args):void {
+			if(args.length < 2) throw new ArgumentError("need at least <expected> and <actual>");
+			var b:* = args.pop();
+			var a:* = args.pop();
+			var message:String = args.pop() || "";
+			
+			assertAllKeys(message + ":missing key:",a,b);
+			assertAllKeys(message + ":extra key:",b,a);
 		}
 		
-		static private function assertAllKeys(a:Object, b:Object):void {
+		static private function assertAllKeys(message:String, a:Object, b:Object):void {
 			if(a === b) return;
 			for(var key:* in a) 
-				assertTrue("missing key:"+key, key in b);
+				if(key in b) continue;
+				else fail(message + key);
 		}
 		
 		
